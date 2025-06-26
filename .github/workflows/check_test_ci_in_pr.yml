@@ -56,8 +56,8 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "pending",
-            "description": "Execução do CI TestCI em andamento!...",
-            "context": "Verificacao Manual CI"
+            "description": "em andamento!...",
+            "context": "Execução do CI TestCI"
           }'
 
   exec-tests:
@@ -80,8 +80,8 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "success",
-            "description": "Verificação manual executada e aprovada com sucesso!",
-            "context": "Verificacao Manual CI"
+            "description": "finalizada com sucesso!",
+            "context": "Execução do CI TestCI"
           }'
 
       - name: 'Reportar falha na verificação'
@@ -93,6 +93,6 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "failure",
-            "description": "Os testes manuais falharam.",
-            "context": "Verificacao Manual CI"
+            "description": "finalizada com falhas!",
+            "context": "Execução do CI TestCI"
           }'
