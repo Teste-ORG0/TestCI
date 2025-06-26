@@ -1,6 +1,7 @@
-name: TestCI
+name: TestCI - Reusable Suite
 
 on:
+  workflow_call:
   push:
     branches:
       - master
@@ -12,8 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run Brakeman
-        run: echo "Brakeman Executado"
+        run: |
+          echo "Brakeman Executado"          
+          ruby script.rb
 
   features_tests:
     name: Run Only Feature Specs
@@ -21,8 +25,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run Feature Specs
-        run: echo "Features tests Executado"
+        run: |
+          echo "Features tests Executado"
+          ruby script.rb
          
   non_features_tests:
     name: Run All Except Feature Specs
@@ -30,5 +37,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run non feature Specs
-        run: echo "Non Features tests Executado"
+        run: |
+          echo "Non Features tests Executado"
+          ruby script.rb
