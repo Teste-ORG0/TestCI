@@ -11,6 +11,8 @@ jobs:
       pull-requests: read
       contents: read
       statuses: write
+    outputs:
+      commit_sha: ${{ steps.find_pr.outputs.sha }}
     steps:
       - name: 'Checkout do código (contexto inicial)'
         uses: actions/checkout@v4
@@ -63,16 +65,17 @@ jobs:
    uses: ./.github/workflows/test.yml
    
   mark-pr-with-approve-or-failure:
-    needs: exec-tests
+    needs: [find_and_mark-pr-with-status-pending, exec-tests]
     runs-on: ubuntu-latest
     permissions:
       statuses: write
+    if: always()
     steps:
       - name: 'Aprovar verificação manual'
-        if: success()
+        if: needs.exec-tests.result == 'success'
         run: |
           curl --request POST \
-          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ steps.find_pr.outputs.sha }}" \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find_and_mark-pr-with-status-pending.outputs.commit_sha }}" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
@@ -82,10 +85,10 @@ jobs:
           }'
 
       - name: 'Reportar falha na verificação'
-        if: failure()
+        if: needs.exec-tests.result == 'failure'
         run: |
           curl --request POST \
-          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ steps.find_pr.outputs.sha }}" \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find_and_mark-pr-with-status-pending.outputs.commit_sha }}" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
