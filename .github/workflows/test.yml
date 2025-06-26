@@ -14,7 +14,15 @@ jobs:
 
     steps:
       - name: Run Brakeman
-        run: echo "Brakeman Executado"
+        run: |
+          echo "Brakeman Executado"          
+          if [ $(($RANDOM % 2)) -eq 0 ]; then
+            echo "Resultado: Sucesso! O PR será liberado."
+            exit 0 # Sai com código 0 (sucesso)
+          else
+            echo "Resultado: Falha! O PR permanecerá bloqueado."
+            exit 1 # Sai com código 1 (falha), o que faz o step falhar
+          fi
 
   features_tests:
     name: Run Only Feature Specs
@@ -23,7 +31,15 @@ jobs:
 
     steps:
       - name: Run Feature Specs
-        run: echo "Features tests Executado"
+        run: |
+          echo "Features tests Executado"
+          if [ $(($RANDOM % 2)) -eq 0 ]; then
+            echo "Resultado: Sucesso! O PR será liberado."
+            exit 0 # Sai com código 0 (sucesso)
+          else
+            echo "Resultado: Falha! O PR permanecerá bloqueado."
+            exit 1 # Sai com código 1 (falha), o que faz o step falhar
+          fi
          
   non_features_tests:
     name: Run All Except Feature Specs
@@ -32,4 +48,12 @@ jobs:
 
     steps:
       - name: Run non feature Specs
-        run: echo "Non Features tests Executado"
+        run: |
+          echo "Non Features tests Executado"
+          if [ $(($RANDOM % 2)) -eq 0 ]; then
+            echo "Resultado: Sucesso! O PR será liberado."
+            exit 0 # Sai com código 0 (sucesso)
+          else
+            echo "Resultado: Falha! O PR permanecerá bloqueado."
+            exit 1 # Sai com código 1 (falha), o que faz o step falhar
+          fi
