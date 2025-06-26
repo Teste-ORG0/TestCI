@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 jobs:
-  find_and_mark-pr-with-status-pending:
+  find-pr-and-mark-pending:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
@@ -61,11 +61,11 @@ jobs:
           }'
 
   exec-tests:
-   needs: find_and_mark-pr-with-status-pending
-   uses: ./.github/workflows/test.yml
+   needs: find-pr-and-mark-pending
+   uses: ./.github/workflows/reusable-test-suite.yml
    
   mark-pr-with-approve-or-failure:
-    needs: [find_and_mark-pr-with-status-pending, exec-tests]
+    needs: [find-pr-and-mark-pending, exec-tests]
     runs-on: ubuntu-latest
     permissions:
       statuses: write
@@ -75,7 +75,7 @@ jobs:
         if: needs.exec-tests.result == 'success'
         run: |
           curl --request POST \
-          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find_and_mark-pr-with-status-pending.outputs.commit_sha }}" \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find-pr-and-mark-pending.outputs.commit_sha }}" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
@@ -88,7 +88,7 @@ jobs:
         if: needs.exec-tests.result == 'failure'
         run: |
           curl --request POST \
-          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find_and_mark-pr-with-status-pending.outputs.commit_sha }}" \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.find-pr-and-mark-pending.outputs.commit_sha }}" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
