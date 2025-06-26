@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
+      contents: read
     steps:
       - name: 'Checkout do código (contexto inicial)'
         uses: actions/checkout@v4
