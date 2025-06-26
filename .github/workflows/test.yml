@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run Brakeman
         run: |
           echo "Brakeman Executado"          
@@ -24,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run Feature Specs
         run: |
           echo "Features tests Executado"
@@ -35,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Run non feature Specs
         run: |
           echo "Non Features tests Executado"
