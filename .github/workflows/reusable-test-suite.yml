@@ -1,4 +1,4 @@
-name: TestCI
+name: TestCI - Reusable Suite
 
 on:
   workflow_call:
