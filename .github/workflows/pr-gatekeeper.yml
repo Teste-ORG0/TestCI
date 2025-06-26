@@ -17,6 +17,6 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "failure",
-            "description": "Aguardando execução do CI manual para validar as alterações.",
-            "context": "Verificacao Manual CI"
+            "description": "Aguardando o início manual.",
+            "context": "Execução do CI TestCI"
           }'
