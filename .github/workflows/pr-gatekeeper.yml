@@ -1,14 +1,15 @@
-name: 'PR Gatekeeper: Aguardando Verificação Manual'
-
+name: 'PR Gatekeeper'
 on:
   pull_request:
-    types: [opened, synchronize, reopened] # Roda sempre que o PR é aberto ou atualizado
+    types: [opened, synchronize, reopened]
 
 jobs:
   create_pending_check:
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write
     steps:
-      - name: 'Criar status de verificação pendente'
+      - name: 'Creates pending status check'
         run: |
           curl --request POST \
           --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}" \
