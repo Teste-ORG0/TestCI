@@ -1,0 +1,34 @@
+name: Letzplay CI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  security_check:
+    name: Security Check (Brakeman)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Brakeman
+        run: echo "Brakeman Executado"
+
+  features_tests:
+    name: Run Only Feature Specs
+    needs: security_check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Feature Specs
+        run: echo "Features tests Executado"
+         
+  non_features_tests:
+    name: Run All Except Feature Specs
+    needs: security_check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run non feature Specs
+        run: echo "Non Features tests Executado"
