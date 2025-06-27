@@ -1,5 +1,7 @@
 number = rand(0..10)
 
+puts "New version"
+
 if number > 7
   puts "❌ Falha!"
   exit(1)
