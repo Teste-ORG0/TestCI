@@ -1,6 +1,6 @@
 # Fluxo de CI/CD do Projeto TestCI
 
-Este documento descreve o fluxo de CI implementado para este projeto, garantindo a qualidade e a segurança antes da integração de código na branch principal.
+Este documento descreve uma sugestão de um novo fluxo de CI.
 
 ## Fluxograma do Processo
 
