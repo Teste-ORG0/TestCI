@@ -14,11 +14,12 @@ jobs:
     outputs:
       commit_sha: ${{ steps.find_pr.outputs.sha }}
     steps:
-      - name: 'Checkout do código (contexto inicial)'
+      - name: 'Code checkout (initial context)'
         uses: actions/checkout@v4
-      - name: 'Encontrar PR aberto a partir da branch'
+      - name: 'Find open PR from the branch'
         id: find_pr
         run: |
+          # Vou deixar esses comentários para ficar claro oq está acontecendo nesse passo.
           # Usa a CLI do GitHub para listar PRs abertos que vêm da branch selecionada
           # O formato de saída é JSON, contendo o número e o SHA do último commit.
           PR_DATA=$(gh pr list --head "${{ github.ref_name }}" --state open --json number,headRefOid)
@@ -71,7 +72,7 @@ jobs:
       statuses: write
     if: always()
     steps:
-      - name: 'Aprovar verificação manual'
+      - name: 'Approves manual verification'
         if: needs.exec-tests.result == 'success'
         run: |
           curl --request POST \
@@ -80,11 +81,11 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "success",
-            "description": "finalizada com sucesso!",
+            "description": "finalizado com sucesso!",
             "context": "Execução do CI TestCI"
           }'
 
-      - name: 'Reportar falha na verificação'
+      - name: 'Fail manual verification'
         if: needs.exec-tests.result == 'failure'
         run: |
           curl --request POST \
@@ -93,6 +94,6 @@ jobs:
           --header "Accept: application/vnd.github.v3+json" \
           --data '{
             "state": "failure",
-            "description": "finalizada com falhas!",
+            "description": "finalizado com falhas!",
             "context": "Execução do CI TestCI"
           }'
