@@ -21,40 +21,17 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           reactions: |
             rocket
-      - name: 'Code checkout (initial context)'
-        uses: actions/checkout@v4
       - name: 'Find open PR from the branch'
         id: find_pr
         run: |
-          # Vou deixar esses comentários para ficar claro oq está acontecendo nesse passo.
-          # Usa a CLI do GitHub para listar PRs abertos que vêm da branch selecionada
-          # O formato de saída é JSON, contendo o número e o SHA do último commit.
-          PR_DATA=$(gh pr list --head "${{ github.ref_name }}" --state open --json number,headRefOid)
-          
-          # Validação: Verifica se algum PR foi encontrado
-          if [[ -z "$PR_DATA" || "$PR_DATA" == "[]" ]]; then
-            echo "::error::Nenhum Pull Request aberto encontrado para a branch '${{ github.ref_name }}'."
-            exit 1
-          fi
-          
-          # Validação: Verifica se mais de um PR foi encontrado (caso raro, mas possível)
-          PR_COUNT=$(echo "$PR_DATA" | jq 'length')
-          if [[ "$PR_COUNT" -gt 1 ]]; then
-            echo "::error::Mais de um Pull Request aberto encontrado para a branch '${{ github.ref_name }}'. Aborte."
-            exit 1
-          fi
-          
-          # Extrai os dados do PR usando 'jq' e os exporta para os próximos passos
-          PR_SHA=$(echo "$PR_DATA" | jq -r '.[0].headRefOid')
-          PR_NUMBER=$(echo "$PR_DATA" | jq -r '.[0].number')
-          
-          echo "PR encontrado: #${PR_NUMBER}"
-          echo "SHA do commit: ${PR_SHA}"
-          
+          PR_SHA=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q '.[].headRefOid')
           echo "sha=${PR_SHA}" >> $GITHUB_OUTPUT
-          echo "number=${PR_NUMBER}" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Code checkout (initial context)'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.find_pr.outputs.sha }}
     
       - name: 'Marcar PR com status de pendente'
         run: |
