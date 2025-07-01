@@ -9,15 +9,13 @@ jobs:
       if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-ci')
       runs-on: ubuntu-latest
       permissions:
+        issues: write
         pull-requests: read
         statuses: write
         contents: read
       outputs:
         commit_sha: ${{ steps.find_pr.outputs.sha }}
-      steps:
-      - name: 'Code checkout'
-        uses: actions/checkout@v4
-    
+      steps:   
       - name: 'Adiciona uma reação ao comentário para feedback'
         uses: peter-evans/create-or-update-comment@v4
         with:
@@ -28,7 +26,7 @@ jobs:
       - name: 'Find open PR from the branch'
         id: find_pr
         run: |
-          PR_SHA=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q '.[].headRefOid')
+          PR_SHA=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q '.headRefOid')
           echo "sha=${PR_SHA}" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +36,7 @@ jobs:
         with:
           ref: ${{ steps.find_pr.outputs.sha }}
     
-      - name: 'Marcar PR com status de pendente'
+      - name: 'check PR with pending statuses'
         run: |
           curl --request POST \
           --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ steps.find_pr.outputs.sha }}" \
