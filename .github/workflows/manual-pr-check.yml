@@ -58,7 +58,8 @@ jobs:
           --data '{
             "state": "pending",
             "description": "em andamento!...",
-            "context": "Execução do CI TestCI"
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }'
 
   exec-tests:
@@ -82,7 +83,8 @@ jobs:
           --data '{
             "state": "success",
             "description": "finalizado com sucesso!",
-            "context": "Execução do CI TestCI"
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }'
 
       - name: 'Fail manual verification'
@@ -95,5 +97,6 @@ jobs:
           --data '{
             "state": "failure",
             "description": "finalizado com falhas!",
-            "context": "Execução do CI TestCI"
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }'
