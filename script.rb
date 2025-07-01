@@ -1,6 +1,6 @@
 number = rand(0..10)
 
-puts "TESTE 1"
+puts "TESTE 3"
 if number > 7
   puts "❌ Falha!"
   exit(0)
