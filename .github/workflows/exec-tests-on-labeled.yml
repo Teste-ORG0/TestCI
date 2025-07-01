@@ -14,7 +14,6 @@ jobs:
       - run: echo $LABEL_TO_CHECK
       - run: echo ${{ github.event.label.name }}
       - run: echo ${{ env.LABEL_TO_CHECK  }}
-      - run: echo ${{ LABEL_TO_CHECK  }}
   
   exec-tests:
     uses: ./.github/workflows/reusable-test-suite.yml
