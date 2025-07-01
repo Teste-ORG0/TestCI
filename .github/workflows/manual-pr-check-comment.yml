@@ -22,11 +22,8 @@ jobs:
       - name: 'Adiciona uma reação ao comentário para feedback'
         uses: peter-evans/create-or-update-comment@v4
         with:
-          comment-id: 3025039935
-          reactions: |
-            heart
-            hooray
-            laugh
+          comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
   
       - name: 'Find open PR from the branch'
         id: find_pr
