@@ -5,9 +5,14 @@ on:
     types: labeled
 
 env:
-  LABEL_TO_CHECK: 'bug'
+  LABEL_TO_CHECK: bug
 
 jobs: 
+  echo-bug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo $LABEL_TO_CHECK
+  
   exec-tests:
     uses: ./.github/workflows/reusable-test-suite.yml
     if: ${{ github.event.label.name == vars.LABEL_TO_CHECK }}
