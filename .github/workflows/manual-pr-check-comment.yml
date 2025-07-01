@@ -24,6 +24,7 @@ jobs:
         with:
           comment-id: ${{ github.event.comment.id }}
           reactions: eyes
+          token: ${{ secrets.GITHUB_TOKEN }}
   
       - name: 'Find open PR from the branch'
         id: find_pr
