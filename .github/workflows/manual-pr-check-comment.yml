@@ -22,7 +22,7 @@ jobs:
       - name: 'Adiciona uma reação ao comentário para feedback'
         uses: peter-evans/create-or-update-comment@v4
         with:
-          comment-id: ${{ github.event.comment.id }}
+          comment-id: '3025039935'
           reactions: |
             rocket
   
