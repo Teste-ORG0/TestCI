@@ -1,9 +1,5 @@
 name: Check TestCi in PR
 
-on:
-  pull_request:
-    types: labeled
-
 jobs:
   run-ci-on-comment:
       runs-on: ubuntu-latest
