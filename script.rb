@@ -1,7 +1,7 @@
 number = rand(0..10)
 
+puts "TESTE 4"
 if number > 7
-  puts "TESTE 4"
   puts "❌ Falha!"
   exit(0)
 else
