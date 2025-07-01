@@ -15,12 +15,16 @@ jobs:
       outputs:
         commit_sha: ${{ steps.find_pr.outputs.sha }}
       steps:
+      - name: 'Code checkout'
+        uses: actions/checkout@v4
+    
       - name: 'Adiciona uma reação ao comentário para feedback'
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
           reactions: |
             rocket
+  
       - name: 'Find open PR from the branch'
         id: find_pr
         run: |
@@ -28,7 +32,8 @@ jobs:
           echo "sha=${PR_SHA}" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 'Code checkout (initial context)'
+
+      - name: 'Code checkout'
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.find_pr.outputs.sha }}
