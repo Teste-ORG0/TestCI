@@ -5,7 +5,7 @@ on:
     types: labeled
 
 env:
-  LABEL_TO_CHECK: 'exec-CI'
+  LABEL_TO_CHECK: 'bug'
 
 jobs: 
   exec-tests:
