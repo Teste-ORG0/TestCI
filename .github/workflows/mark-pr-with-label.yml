@@ -1,0 +1,99 @@
+name: Check TestCi in PR
+
+on:
+  label:
+    types: created
+
+jobs:
+  run-ci-on-comment:
+      runs-on: ubuntu-latest
+      if: github.event.label.name == 'exec-CI'
+      permissions:
+        issues: write
+        pull-requests: write
+        statuses: write
+        contents: read
+      outputs:
+        commit_sha: ${{ steps.find_pr.outputs.sha }}
+      steps:
+      - name: 'Code checkout'
+        uses: actions/checkout@v4
+  
+      - name: 'Find open PR from the branch'
+        id: find_pr
+        run: |
+          PR_SHA=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q '.headRefOid')
+          echo "sha=${PR_SHA}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Code checkout'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.find_pr.outputs.sha }}
+    
+      - name: 'check PR with pending statuses'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ steps.find_pr.outputs.sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "pending",
+            "description": "em andamento!...",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
+  exec-tests:
+   needs: run-ci-on-comment
+   uses: ./.github/workflows/reusable-test-suite.yml
+   with:
+      commit_sha: ${{ needs.run-ci-on-comment.outputs.commit_sha }}
+   
+  mark-pr-with-approve-or-failure:
+    needs: [run-ci-on-comment, exec-tests]
+    runs-on: ubuntu-latest
+    permissions:
+        issues: write
+        pull-requests: write
+        statuses: write
+        contents: read
+    if: always() && github.event.label.name == 'exec-CI'
+    steps:
+
+    
+      - name: 'Delete label'
+      - uses: mondeja/remove-labels-gh-action@v2
+        with:
+            labels: |
+              exec-ci
+
+          
+      - name: 'Approves manual verification'
+        if: needs.exec-tests.result == 'success'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.run-ci-on-comment.outputs.commit_sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "success",
+            "description": "finalizado com sucesso!",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
+      - name: 'Fail manual verification'
+        if: needs.exec-tests.result == 'failure'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.run-ci-on-comment.outputs.commit_sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "failure",
+            "description": "finalizado com falhas!",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
