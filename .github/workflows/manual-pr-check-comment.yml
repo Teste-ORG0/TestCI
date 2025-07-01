@@ -55,6 +55,8 @@ jobs:
   exec-tests:
    needs: run-ci-on-comment
    uses: ./.github/workflows/reusable-test-suite.yml
+   with:
+      commit_sha: ${{ needs.run-ci-on-comment.outputs.commit_sha }}
    
   mark-pr-with-approve-or-failure:
     needs: [run-ci-on-comment, exec-tests]
