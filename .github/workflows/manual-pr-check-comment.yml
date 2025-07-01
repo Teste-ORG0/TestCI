@@ -61,7 +61,10 @@ jobs:
     needs: [run-ci-on-comment, exec-tests]
     runs-on: ubuntu-latest
     permissions:
-      statuses: write
+        issues: write
+        pull-requests: write
+        statuses: write
+        contents: read
     if: always()
     steps:
       - name: 'Delete comment'
