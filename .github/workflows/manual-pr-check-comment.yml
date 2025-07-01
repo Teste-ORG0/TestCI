@@ -3,11 +3,11 @@ name: Check TestCi in PR
 on:
   issue_comment:
     types: [created]
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-ci')
 
 jobs:
   run-ci-on-comment:
       runs-on: ubuntu-latest
+      if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-ci')
       permissions:
         issues: write
         pull-requests: write
@@ -65,7 +65,7 @@ jobs:
         pull-requests: write
         statuses: write
         contents: read
-    if: always()
+    if: always() && github.event.issue.pull_request && contains(github.event.comment.body, '/run-ci')
     steps:
       - name: 'Delete comment'
         uses: detomarco/delete-comments@1.1.0
