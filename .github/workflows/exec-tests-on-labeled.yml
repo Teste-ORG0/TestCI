@@ -10,12 +10,12 @@ env:
 jobs: 
   exec-tests:
    uses: ./.github/workflows/reusable-test-suite.yml
-   if:  ${{ github.event.label.name == env.LABEL_TO_CHECK }}
+   if:  github.event.label.name == env.LABEL_TO_CHECK
    
   remove-label-from-pr:
     runs-on: ubuntu-latest
     needs: [exec-tests]
-    if: always() && ${{ github.event.label.name == env.LABEL_TO_CHECK }}
+    if: always() && github.event.label.name == env.LABEL_TO_CHECK
     permissions:
       pull-requests: write
     steps:
