@@ -1,13 +1,7 @@
 name: TestCI - Reusable Suite
 
 on:
-  pull_request:
-    types: labeled
   workflow_call:
-    inputs:
-      commit_sha:
-        required: true
-        type: string
   push:
     branches:
       - master
@@ -20,8 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.commit_sha || github.sha }}
       - name: Run Brakeman
         run: |
           echo "Brakeman Executado"          
@@ -34,8 +26,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.commit_sha || github.sha }}
       - name: Run Feature Specs
         run: |
           echo "Features tests Executado"
@@ -48,8 +38,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.commit_sha || github.sha }}
       - name: Run non feature Specs
         run: |
           echo "Non Features tests Executado"
