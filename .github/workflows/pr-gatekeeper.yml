@@ -1,7 +1,5 @@
 name: 'PR Gatekeeper'
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   create_pending_check:
