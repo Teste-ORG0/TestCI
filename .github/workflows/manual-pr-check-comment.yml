@@ -1,0 +1,109 @@
+name: Check TestCi in PR
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  run-ci-on-comment:
+      if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-ci')
+      runs-on: ubuntu-latest
+      permissions:
+        pull-requests: read
+        statuses: write
+        contents: read
+      outputs:
+        commit_sha: ${{ steps.find_pr.outputs.sha }}
+      steps:
+      - name: 'Adiciona uma reação ao comentário para feedback'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: |
+            rocket
+      - name: 'Code checkout (initial context)'
+        uses: actions/checkout@v4
+      - name: 'Find open PR from the branch'
+        id: find_pr
+        run: |
+          # Vou deixar esses comentários para ficar claro oq está acontecendo nesse passo.
+          # Usa a CLI do GitHub para listar PRs abertos que vêm da branch selecionada
+          # O formato de saída é JSON, contendo o número e o SHA do último commit.
+          PR_DATA=$(gh pr list --head "${{ github.ref_name }}" --state open --json number,headRefOid)
+          
+          # Validação: Verifica se algum PR foi encontrado
+          if [[ -z "$PR_DATA" || "$PR_DATA" == "[]" ]]; then
+            echo "::error::Nenhum Pull Request aberto encontrado para a branch '${{ github.ref_name }}'."
+            exit 1
+          fi
+          
+          # Validação: Verifica se mais de um PR foi encontrado (caso raro, mas possível)
+          PR_COUNT=$(echo "$PR_DATA" | jq 'length')
+          if [[ "$PR_COUNT" -gt 1 ]]; then
+            echo "::error::Mais de um Pull Request aberto encontrado para a branch '${{ github.ref_name }}'. Aborte."
+            exit 1
+          fi
+          
+          # Extrai os dados do PR usando 'jq' e os exporta para os próximos passos
+          PR_SHA=$(echo "$PR_DATA" | jq -r '.[0].headRefOid')
+          PR_NUMBER=$(echo "$PR_DATA" | jq -r '.[0].number')
+          
+          echo "PR encontrado: #${PR_NUMBER}"
+          echo "SHA do commit: ${PR_SHA}"
+          
+          echo "sha=${PR_SHA}" >> $GITHUB_OUTPUT
+          echo "number=${PR_NUMBER}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: 'Marcar PR com status de pendente'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ steps.find_pr.outputs.sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "pending",
+            "description": "em andamento!...",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
+  exec-tests:
+   needs: run-ci-on-comment
+   uses: ./.github/workflows/reusable-test-suite.yml
+   
+  mark-pr-with-approve-or-failure:
+    needs: [run-ci-on-comment, exec-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+    if: always()
+    steps:
+      - name: 'Approves manual verification'
+        if: needs.exec-tests.result == 'success'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.run-ci-on-comment.outputs.commit_sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "success",
+            "description": "finalizado com sucesso!",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
+      - name: 'Fail manual verification'
+        if: needs.exec-tests.result == 'failure'
+        run: |
+          curl --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ needs.run-ci-on-comment.outputs.commit_sha }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --header "Accept: application/vnd.github.v3+json" \
+          --data '{
+            "state": "failure",
+            "description": "finalizado com falhas!",
+            "context": "Execução do CI TestCI",
+            "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
