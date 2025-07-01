@@ -15,7 +15,10 @@ jobs:
         contents: read
       outputs:
         commit_sha: ${{ steps.find_pr.outputs.sha }}
-      steps:   
+      steps:
+      - name: 'Code checkout'
+        uses: actions/checkout@v4
+        
       - name: 'Adiciona uma reação ao comentário para feedback'
         uses: peter-evans/create-or-update-comment@v4
         with:
