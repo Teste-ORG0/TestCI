@@ -12,6 +12,7 @@ jobs:
       - name: 'Creates pending status check'
         run: |
           MANUAL_WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/workflows/manual-pr-check.yml"
+          PR_BRANCH_REF="${{ github.event.pull_request.head.ref }}"
           curl --request POST \
           --url "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
@@ -19,6 +20,6 @@ jobs:
           --data '{
             "state": "failure",
             "description": "Aguardando o início manual.",
-            "target_url": "'"${MANUAL_WORKFLOW_URL}"'",
+            "target_url": "'"${MANUAL_WORKFLOW_URL}?ref=${PR_BRANCH_REF}"'",
             "context": "Execução do CI TestCI"
           }'
