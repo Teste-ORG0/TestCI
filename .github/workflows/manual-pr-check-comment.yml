@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: 'Adiciona uma reação ao comentário para feedback'
-        uses: detomarco/delete-comment@v1
+        uses: detomarco/delete-comments@1.1.0
         with:
           comment-id: ${{ github.event.comment.id }}
   
