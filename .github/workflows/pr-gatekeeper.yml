@@ -18,5 +18,6 @@ jobs:
           --data '{
             "state": "failure",
             "description": "Aguardando o início manual.",
+            "target_url": "https://github.com/Teste-ORG0/TestCI/actions/workflows/manual-pr-check.yml",
             "context": "Execução do CI TestCI"
           }'
