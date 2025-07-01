@@ -9,8 +9,8 @@ env:
 
 jobs: 
   exec-tests:
-   uses: ./.github/workflows/reusable-test-suite.yml
-   if:  ${{ github.event.label.name == env.LABEL_TO_CHECK }}
+    uses: ./.github/workflows/reusable-test-suite.yml
+    if: ${{ github.event.label.name == env.LABEL_TO_CHECK }}
    
   remove-label-from-pr:
     runs-on: ubuntu-latest
@@ -24,6 +24,4 @@ jobs:
       - name: 'remove label'
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: env.LABEL_TO_CHECK
-    
-    
+          labels: ${{ env.LABEL_TO_CHECK }}
