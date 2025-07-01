@@ -2,7 +2,7 @@ number = rand(0..10)
 
 puts "TESTE 456 AGAIN!"
 if number > 7
-  puts "❌ Falha!"
+  puts "❌ Falh!"
   exit(1)
 else
   puts "✅ Sucesso!"
