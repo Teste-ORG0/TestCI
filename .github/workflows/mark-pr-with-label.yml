@@ -64,7 +64,7 @@ jobs:
 
     
       - name: 'Delete label'
-      - uses: mondeja/remove-labels-gh-action@v2
+        uses: mondeja/remove-labels-gh-action@v2
         with:
             labels: |
               exec-ci
