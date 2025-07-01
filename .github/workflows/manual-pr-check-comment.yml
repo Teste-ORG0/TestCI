@@ -19,10 +19,11 @@ jobs:
       - name: 'Code checkout'
         uses: actions/checkout@v4
         
-      - name: 'Adiciona uma reação ao comentário para feedback'
-        uses: detomarco/delete-comments@1.1.0
+      - name: Add reactions
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
   
       - name: 'Find open PR from the branch'
         id: find_pr
@@ -63,6 +64,10 @@ jobs:
       statuses: write
     if: always()
     steps:
+      - name: 'Delete comment'
+        uses: detomarco/delete-comments@1.1.0
+        with:
+          comment-id: ${{ github.event.comment.id }}
       - name: 'Approves manual verification'
         if: needs.exec-tests.result == 'success'
         run: |
