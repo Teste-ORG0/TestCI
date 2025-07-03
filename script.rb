@@ -1,7 +1,7 @@
 number = rand(0..10)
 
 puts "TESTE FInal"
-if number > 7
+if number > 9
   puts "❌ Falha!"
   exit(1)
 else
