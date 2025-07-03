@@ -2,7 +2,7 @@ number = rand(0..10)
 
 puts "TESTE FInal"
 if number > 7
-  puts "❌ Falha!"
+  puts "❌ Faha!"
   exit(0)
 else
   puts "✅ Sucesso!"
