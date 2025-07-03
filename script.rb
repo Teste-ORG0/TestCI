@@ -1,7 +1,6 @@
 number = rand(0..10)
 
-puts "TESTE 456 AGA]IN!"
-if number > 7
+if number > 9
   puts "❌ Falha!"
   exit(0)
 else
